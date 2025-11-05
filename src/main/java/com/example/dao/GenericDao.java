@@ -2,14 +2,13 @@ package com.example.dao;
 
 import org.hibernate.Session;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 public interface GenericDao<T, ID>  {
 
     ID save(Session s, T entity);
 
-    Optional<T> findById(Session s, ID id);
+    T findById(Session s, ID id);
 
     T update(Session s, T entity);
 

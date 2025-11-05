@@ -21,8 +21,8 @@ public class GenericDaoHibernate<T, ID extends Serializable> implements GenericD
     }
 
     @Override
-    public Optional<T> findById(Session s, ID id) {
-        return Optional.ofNullable(s.find(entityClass, id));
+    public T findById(Session s, ID id) {
+        return s.find(entityClass, id);
     }
 
     @Override

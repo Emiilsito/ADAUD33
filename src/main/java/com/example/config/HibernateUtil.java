@@ -1,6 +1,6 @@
 package com.example.config;
 
-import model.Ej2.*;
+import com.example.domain.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
@@ -31,13 +31,12 @@ public final class HibernateUtil {
                     .build();
 
             sessionFactory = new MetadataSources(registry)
-                    .addAnnotatedClass(Arcade.class)
-                    .addAnnotatedClass(Cabinet.class)
-                    .addAnnotatedClass(Game.class)
-                    .addAnnotatedClass(Match.class)
-                    .addAnnotatedClass(Player.class)
-                    .addAnnotatedClass(RfidCard.class)
+                    .addAnnotatedClass(AccessCard.class)
+                    .addAnnotatedClass(Booking.class)
+                    .addAnnotatedClass(Space.class)
                     .addAnnotatedClass(Tag.class)
+                    .addAnnotatedClass(User.class)
+                    .addAnnotatedClass(Venue.class)
                     .buildMetadata()
                     .buildSessionFactory();
         }
