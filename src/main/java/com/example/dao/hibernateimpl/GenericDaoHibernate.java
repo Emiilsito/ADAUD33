@@ -4,6 +4,7 @@ import com.example.dao.GenericDao;
 import org.hibernate.Session;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
 
 public class GenericDaoHibernate<T, ID extends Serializable> implements GenericDao<T, ID> {
@@ -43,5 +44,10 @@ public class GenericDaoHibernate<T, ID extends Serializable> implements GenericD
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<T> findAll(Session s) {
+        return s.createQuery("FROM " + entityClass.getSimpleName(), entityClass).list();
     }
 }

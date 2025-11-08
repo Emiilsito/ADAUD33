@@ -2,7 +2,7 @@ package com.example.dao;
 
 import org.hibernate.Session;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface GenericDao<T, ID>  {
 
@@ -15,5 +15,7 @@ public interface GenericDao<T, ID>  {
     void delete(Session s, T entity);
 
     boolean deleteById(Session s, ID id);
+
+    List<T> findAll(Session s);
 
 }
