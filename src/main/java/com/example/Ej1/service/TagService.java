@@ -14,6 +14,27 @@ import org.hibernate.Transaction;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+HQL/JPQL --> orientado a objetos
+    NamedQuery --> entidad
+    -querys: space.name
+
+SQL
+Nativas --> service, dao createNativeQuery
+
+Criteria
+
+3 formas de devolver informacion de varias tablas:
+- Object[]
+- Tuple
+- Dto *Recomendada* record
+
+Metodos para recoger los resultados:
+- getResultList()
+- getSingleResult()
+- getSingleResultOrNull()
+ */
+
 public class TagService {
     private final SessionFactory sf;
     private final TagDao tagDao;

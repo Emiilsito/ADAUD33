@@ -6,11 +6,16 @@ import com.example.Ej1.dao.VenueDao;
 import com.example.Ej1.dao.hibernateimpl.SpaceDaoHibernate;
 import com.example.Ej1.dao.hibernateimpl.VenueDaoHibernate;
 import com.example.Ej1.domain.Space;
+import com.example.Ej1.domain.Tag;
 import com.example.Ej1.domain.Venue;
+import com.example.Ej1.dto.MostProfitSpacesDto;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.criteria.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class SpaceService {
@@ -23,6 +28,139 @@ public class SpaceService {
         this.sf = HibernateUtil.getSessionFactory();
         this.spaceDao = new SpaceDaoHibernate();
         this.venueDao =  new VenueDaoHibernate();
+    }
+
+    //Queremos obtener los espacios que nunca han sido reservados --> SQL nativa
+
+    public List<Space> getNeverReservedSpaces(){
+        Transaction tx = null;
+        try{
+            Session s = sf.getCurrentSession();
+            tx = s.beginTransaction();
+            List<Space> spaces = spaceDao.getNeverReservedSpaces(s);
+            tx.commit();
+            return spaces;
+        } catch (PersistenceException e){
+            if (tx != null) tx.rollback();
+            throw e;
+        }
+
+    }
+
+    //los 3 espacios con mas ingresos generados, de reservas confirmadas
+    //codigo, nombre y total generado, desc del total
+
+    public List<MostProfitSpacesDto> getMostProfitSpaces(){
+        Transaction tx = null;
+        try{
+            Session s = sf.getCurrentSession();
+            tx = s.beginTransaction();
+
+            List<MostProfitSpacesDto> list = spaceDao.findTop3MostProfitSpaces(s);
+            tx.commit();
+            return list;
+        } catch (PersistenceException e){
+            if (tx != null) tx.rollback();
+            throw e;
+        }
+    }
+
+    /*
+    CRITERIA
+     */
+
+    public void testCriteria(){
+        Transaction tx = null;
+        try{
+            Session session = sf.getCurrentSession();
+            tx = session.beginTransaction();
+
+            CriteriaBuilder cb = session.getCriteriaBuilder(); //Construye expresiones
+            CriteriaQuery<Space> cq = cb.createQuery(Space.class);
+            Root<Space> root = cq.from(Space.class);
+            Join<Space, Venue> joinVenue = root.join("venue");
+
+            //Todos los espacios activos
+            cq.select(root)
+                            .where(cb.and(cb.gt(root.get("capacity"), 10),
+                                    cb.equal(root.get("name"), "")),
+                                    cb.isTrue(root.get("active"))
+                            )
+                    .having()
+                                    .orderBy(cb.asc(root.get("name")),
+                                            cb.desc(root.get("")));
+
+            List<Space> spaces = session.createQuery(cq).getResultList();
+
+
+            tx.commit();
+        } catch (PersistenceException e){
+            if (tx != null) tx.rollback();
+            throw e;
+        }
+    }
+
+    /*
+    Devuelve todos los espacios cuyo nombre contenga ELX
+    y que tienen al menos un Tag llamado wifi
+     */
+
+    public void getSpaceElxOnlyOneTagWifi(){
+        Transaction tx = null;
+        try{
+            Session s = sf.getCurrentSession();
+            tx = s.beginTransaction();
+
+            CriteriaBuilder cb = s.getCriteriaBuilder();
+            CriteriaQuery<Space> cq = cb.createQuery(Space.class);
+            Root<Space> root = cq.from(Space.class);
+            Join<Space, Tag> joinTag = root.join("tags", JoinType.LEFT);
+
+            cq.select(root)
+                            .where(cb.and(cb.like(root.get("name"), "%ELX%"),
+                                    cb.equal(cb.lower(joinTag.get("name")), "wifi")));
+
+            List<Space> spaces = s.createQuery(cq).getResultList();
+
+            tx.commit();
+        } catch (PersistenceException e){
+            if (tx != null) tx.rollback();
+            throw e;
+        }
+    }
+
+
+    /*
+    Queremos una lista de espacios que están activos, tienen una capacidad minima y un precio maximo por hora,
+    ordenados por precio ascendente y por capacidad desc.
+     */
+
+    public void getListSpacesActive(int capacidad, BigDecimal precioMax){
+        Transaction tx = null;
+        try{
+            Session s = sf.getCurrentSession();
+            tx = s.beginTransaction();
+
+            CriteriaBuilder cb = s.getCriteriaBuilder();
+            CriteriaQuery<Space> cq = cb.createQuery(Space.class);
+            Root<Space> root = cq.from(Space.class);
+
+            cq.select(root)
+                    .where(cb.and(
+                            cb.isTrue(root.get("active"))),
+                            cb.greaterThan(root.get("capacity"), capacidad),
+                            cb.lessThanOrEqualTo(root.get("hourlyPrice"), precioMax))
+                    .orderBy(cb.asc(root.get("hourlyPrice")))
+                    .orderBy(cb.desc(root.get("capacity")));
+
+            List<Space> spaces = s.createQuery(cq).getResultList();
+
+            tx.commit();
+
+        } catch (PersistenceException e){
+            if (tx != null) tx.rollback();
+            throw e;
+        }
     }
 
     public Long create(Space space) {
