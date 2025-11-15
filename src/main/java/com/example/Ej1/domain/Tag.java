@@ -1,19 +1,13 @@
 package com.example.Ej1.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Table(name = "tags")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class Tag {
 
     @Id
@@ -25,5 +19,14 @@ public class Tag {
 
     @ManyToMany(mappedBy = "tags")
     private List<Space> spaces;
+
+    @Override
+    public String toString() {
+        return "Tag{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
 
 }

@@ -5,6 +5,7 @@ import com.example.Ej1.dao.SpaceDao;
 import com.example.Ej1.dao.VenueDao;
 import com.example.Ej1.dao.hibernateimpl.SpaceDaoHibernate;
 import com.example.Ej1.dao.hibernateimpl.VenueDaoHibernate;
+import com.example.Ej1.domain.Booking;
 import com.example.Ej1.domain.Space;
 import com.example.Ej1.domain.Tag;
 import com.example.Ej1.domain.Venue;
@@ -16,6 +17,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class SpaceService {
@@ -30,7 +32,40 @@ public class SpaceService {
         this.venueDao =  new VenueDaoHibernate();
     }
 
-    //Queremos obtener los espacios que nunca han sido reservados --> SQL nativa
+    /*
+        4. Espacios activos por capacidad minima y precio maximo
+     */
+
+    public List<Space> findActiveSpaces(int minCapacity, double maxPrice){
+        Transaction tx = null;
+        try{
+            Session s = sf.getCurrentSession();
+            tx = s.beginTransaction();
+
+            CriteriaBuilder cb = s.getCriteriaBuilder();
+            CriteriaQuery<Space> cq = cb.createQuery(Space.class);
+            Root<Space> root = cq.from(Space.class);
+
+            cq.select(root)
+                    .where(cb.and(
+                            cb.isTrue(root.get("active")),
+                            cb.ge(root.get("capacity"), minCapacity),
+                            cb.le(root.get("hourlyPrice"), BigDecimal.valueOf(maxPrice))
+                    ))
+                    .orderBy(cb.asc(root.get("capacity")), cb.asc(root.get("hourlyPrice")));
+
+
+            return s.createQuery(cq).getResultList();
+
+        } catch (PersistenceException e){
+            if (tx != null) tx.rollback();
+            throw e;
+        }
+    }
+
+    /*
+        5. Espacios nunca reservados
+     */
 
     public List<Space> getNeverReservedSpaces(){
         Transaction tx = null;
@@ -47,8 +82,9 @@ public class SpaceService {
 
     }
 
-    //los 3 espacios con mas ingresos generados, de reservas confirmadas
-    //codigo, nombre y total generado, desc del total
+    /*
+        7. Top 3 espacios por ingresos confirmados
+     */
 
     public List<MostProfitSpacesDto> getMostProfitSpaces(){
         Transaction tx = null;

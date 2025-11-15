@@ -9,6 +9,10 @@ import java.util.List;
 @Entity
 @Table(name = "venues")
 @Data
+@NamedQuery(
+        name = "Venue.FindbyCity",
+        query = "SELECT v FROM Venue v WHERE v.city = :city ORDER BY v.name ASC"
+)
 public class Venue {
 
     @Id
@@ -28,4 +32,17 @@ public class Venue {
 
     @OneToMany(mappedBy = "venue", cascade = CascadeType.ALL)
     private List<Space> spaces;
+
+    @Override
+    public String toString() {
+        return "Venue{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", city='" + city + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
+
+
 }

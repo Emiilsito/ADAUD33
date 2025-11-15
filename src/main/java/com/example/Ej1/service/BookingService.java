@@ -10,6 +10,7 @@ import com.example.Ej1.dao.hibernateimpl.UserDaoHibernate;
 import com.example.Ej1.domain.Booking;
 import com.example.Ej1.domain.Space;
 import com.example.Ej1.domain.User;
+import jakarta.persistence.PersistenceException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -30,6 +31,24 @@ public class BookingService {
         this.bookingDao = new BookingDaoHibernate();
         this.userDao = new UserDaoHibernate();
         this.spaceDao = new SpaceDaoHibernate();
+    }
+
+    /*
+        6. Reservas confirmadas por venue y rango.
+    */
+
+    public List<Booking> getConfirmedBookingsByVenueAndRange(){
+        Transaction tx = null;
+        try{
+            Session s = sf.getCurrentSession();
+            tx = s.beginTransaction();
+            List<Booking> confirmedBookingDtos = bookingDao.getConfirmedByVenueAndRange(s, "Sede Central", LocalDateTime.of(2025, 1, 1, 1, 1), LocalDateTime.of(2025, 12, 12, 1, 1));
+            tx.commit();
+            return confirmedBookingDtos;
+        } catch (PersistenceException e){
+            if (tx != null) tx.rollback();
+            throw e;
+        }
     }
 
     public Long create(Long userId, Long spaceId, LocalDateTime start, LocalDateTime end, BigDecimal totalPrice, Booking.BookingStatus status) {

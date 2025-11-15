@@ -1,20 +1,24 @@
 package com.example.Ej1.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bookings")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
+@NamedQuery(
+        name= "Booking.confirmedVenueRange",
+        query = "SELECT b FROM Booking b " +
+                "JOIN b.space s " +
+                "JOIN s.venue v " +
+                "WHERE v.name = :venueName " +
+                "AND b.status = com.example.Ej1.domain.Booking.BookingStatus.CONFIRMED " +
+                "AND b.startTime >= :startDate " +
+                "AND b.endTime <= :endDate"
+)
 public class Booking {
 
     @Id

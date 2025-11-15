@@ -30,6 +30,7 @@ public class Space {
     @Column(name = "name", nullable = false, length = 150)
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private SpaceType type;
 
@@ -50,8 +51,20 @@ public class Space {
     )
     private List<Tag> tags;
 
-    @OneToMany(mappedBy = "space")
+    @OneToMany(mappedBy = "space", fetch = FetchType.LAZY)
     private List<Booking> bookings;
+
+    @Override
+    public String toString() {
+        return "Space{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", code='" + code + '\'' +
+                ", capacity=" + capacity +
+                ", hourlyPrice=" + hourlyPrice +
+                '}';
+    }
+
 
 
 }

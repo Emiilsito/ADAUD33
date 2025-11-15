@@ -5,6 +5,7 @@ import com.example.Ej1.domain.Space;
 import com.example.Ej1.dto.MostProfitSpacesDto;
 import org.hibernate.Session;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class SpaceDaoHibernate extends GenericDaoHibernate<Space, Long> implements SpaceDao {
@@ -17,7 +18,7 @@ public class SpaceDaoHibernate extends GenericDaoHibernate<Space, Long> implemen
     public List<MostProfitSpacesDto> findTop3MostProfitSpaces(Session session) {
         String query = "select new com.example.Ej1.dto.MostProfitSpacesDto(b.space.code, b.space.name, sum(b.totalPrice)) " +
                 "from Booking b " +
-                "where b.status = com.example.Ej1.domain.BookingStatus.CONFIRMED " +
+                "where b.status = com.example.Ej1.domain.Booking.BookingStatus.CONFIRMED " +
                 "group by b.space.code, b.space.name " +
                 "order by sum(b.totalPrice) desc ";
         return session.createQuery(query, MostProfitSpacesDto.class)
@@ -28,7 +29,7 @@ public class SpaceDaoHibernate extends GenericDaoHibernate<Space, Long> implemen
     @Override
     public List<Space> getNeverReservedSpaces(Session session){
         String query = "SELECT s.* FROM spaces s LEFT JOIN bookings b ON s.id = b.space_id" +
-                "where b.space_id is null";
+                " where b.space_id is null";
         return session.createNativeQuery(query, Space.class)
                 .getResultList();
     }

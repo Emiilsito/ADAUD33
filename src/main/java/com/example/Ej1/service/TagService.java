@@ -7,6 +7,8 @@ import com.example.Ej1.dao.hibernateimpl.SpaceDaoHibernate;
 import com.example.Ej1.dao.hibernateimpl.TagDaoHibernate;
 import com.example.Ej1.domain.Space;
 import com.example.Ej1.domain.Tag;
+import com.example.Ej1.dto.CityTagCountDto;
+import com.example.Ej1.dto.MostUsedTagDto;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -45,6 +47,62 @@ public class TagService {
         this.tagDao = new TagDaoHibernate();
         this.spaceDao = new SpaceDaoHibernate();
     }
+
+    /*
+        8. Tags mas usados
+     */
+
+    public List<MostUsedTagDto> getMostUsedTags(){
+        Transaction tx = null;
+        try{
+            Session s = sf.getCurrentSession();
+            tx = s.beginTransaction();
+            List<MostUsedTagDto> mostUsedTagDtos = tagDao.findMostUsedTags(s);
+            tx.commit();
+            return mostUsedTagDtos;
+        } catch (RuntimeException e) {
+            if (tx != null && tx.isActive()) tx.rollback();
+            throw e;
+        }
+    }
+
+    /*
+        9. Devuelve los Tag cuyo nombre empiece por un texto dado, ignorando mayusculas/minusculas.
+     */
+
+    public List<Tag> getTagByText(){
+        Transaction tx = null;
+        try{
+            Session s = sf.getCurrentSession();
+            tx = s.beginTransaction();
+            List<Tag> tags = tagDao.findTagsByPrefix(s, "Fiesta");
+            tx.commit();
+            return tags;
+        } catch (RuntimeException e) {
+            if (tx != null && tx.isActive()) tx.rollback();
+            throw e;
+        }
+    }
+
+    /*
+        10. Devuelve el conteo de cuantos espacios hay por cada combinacion de ciudad y Tag
+     */
+
+    public List<CityTagCountDto> getCountSpaces(){
+        Transaction tx = null;
+        try{
+            Session s = sf.getCurrentSession();
+            tx = s.beginTransaction();
+            List<CityTagCountDto> tags = tagDao.countSpacesByCityAndTag(s);
+            tx.commit();
+            return tags;
+        } catch (RuntimeException e) {
+            if (tx != null && tx.isActive()) tx.rollback();
+            throw e;
+        }
+    }
+
+
 
     public Long create(Tag tag){
         Transaction tx = null;
