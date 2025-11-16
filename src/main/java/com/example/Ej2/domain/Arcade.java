@@ -2,11 +2,17 @@ package com.example.Ej2.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
+
 import java.util.List;
 
 @Entity
 @Table(name = "arcades")
 @Data
+@NamedQuery(
+        name = "Arcade.findByNamePattern",
+        query = "SELECT a FROM Arcade a WHERE a.name LIKE :name"
+)
 public class Arcade {
 
     @Id
@@ -21,4 +27,14 @@ public class Arcade {
 
     @OneToMany(mappedBy = "arcade")
     private List<Cabinet> cabinets;
+
+    @Override
+    public String toString() {
+        return "Arcade{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
+
 }

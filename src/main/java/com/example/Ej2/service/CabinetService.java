@@ -17,6 +17,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import java.util.List;
+
 public class CabinetService {
     private final SessionFactory sf;
     private final GameDao gameDao;
@@ -30,6 +32,24 @@ public class CabinetService {
         arcadeDao = new ArcadeDaoHibernate();
         tagDao = new TagDaoHibernate();
         cabinetDao = new CabinetDaoHibernate();
+    }
+
+    /*
+        4. Cabinets activos por genero
+     */
+
+    public List<Cabinet> getCabinetsActiveByGenre(){
+        Transaction tx = null;
+        try{
+            Session s = sf.getCurrentSession();
+            tx = s.beginTransaction();
+            List<Cabinet> cabinets = cabinetDao.findActiveByGenre(s, "LUCHA");
+            tx.commit();
+            return cabinets;
+        } catch (RuntimeException e) {
+            if (tx != null && tx.isActive()) tx.rollback();
+            throw e;
+        }
     }
 
     public void asignarCabinet(Long cabinetId, Long arcadeId, Long gameId){

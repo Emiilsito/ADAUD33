@@ -22,6 +22,21 @@ public class Game {
     @Column(name = "release_year", nullable = false)
     private int releaseYear;
 
+    @Column(name = "genre", length = 50)
+    private String genre;
+
     @OneToMany(mappedBy = "game")
     private List<Cabinet> cabinets;
+
+    @Override
+    public String toString() {
+        return "Game{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", name='" + name + '\'' +
+                ", releaseYear=" + releaseYear +
+                ", genre='" + genre + '\'' +
+                '}';
+    }
+
 }

@@ -6,8 +6,13 @@ import com.example.Ej2.dao.PlayerDao;
 import com.example.Ej2.dao.RfidCardDao;
 import com.example.Ej2.dao.hibernateimpl.PlayerDaoHibernate;
 import com.example.Ej2.dao.hibernateimpl.RfidCardDaoHibernate;
+import com.example.Ej2.domain.Match;
 import com.example.Ej2.domain.Player;
 import com.example.Ej2.domain.RfidCard;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -36,6 +41,32 @@ public class PlayerService {
             playerDao.create(s, player);
             tx.commit();
             return player.getId();
+        } catch (RuntimeException e) {
+            if (tx != null && tx.isActive()) tx.rollback();
+            throw e;
+        }
+    }
+
+    public List<Player> findPlayersWithInactiveCardAndRecentMatches(LocalDateTime sinceDate){
+        Transaction tx = null;
+        try {
+            Session s = sf.getCurrentSession();
+            tx = s.beginTransaction();
+
+            CriteriaBuilder cb = s.getCriteriaBuilder();
+            CriteriaQuery<Player> cq = cb.createQuery(Player.class);
+            Root<Match> match = cq.from(Match.class);
+
+            Join<Match, Player> player = match.join("player");
+            Join<Player, RfidCard> card = player.join("rfidCard");
+
+            cq.select(player).distinct(true)
+                    .where(cb.and(
+                            cb.isFalse(card.get("active")),
+                            cb.greaterThanOrEqualTo(match.get("startedAt"), sinceDate)
+                    ));
+
+            return s.createQuery(cq).getResultList();
         } catch (RuntimeException e) {
             if (tx != null && tx.isActive()) tx.rollback();
             throw e;

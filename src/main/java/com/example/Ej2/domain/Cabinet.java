@@ -45,4 +45,18 @@ public class Cabinet {
 
     @OneToMany(mappedBy = "cabinet")
     private List<Match> matches;
+
+    @Override
+    public String toString() {
+        return "Cabinet{" +
+                "id=" + id +
+                ", slug='" + slug + '\'' +
+                ", buildYear=" + buildYear +
+                ", status=" + status +
+                ", arcade=" + (arcade != null ? arcade.getName() : "null") +
+                ", game=" + (game != null ? game.getName() : "null") +
+                '}';
+    }
+
+
 }
