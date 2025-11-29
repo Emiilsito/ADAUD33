@@ -30,7 +30,12 @@ public class Venue {
 
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "venue", cascade = CascadeType.ALL)
+    @OneToMany(
+            mappedBy = "venue",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
     private List<Space> spaces;
 
     @Override
@@ -43,6 +48,5 @@ public class Venue {
                 ", createdAt=" + createdAt +
                 '}';
     }
-
 
 }

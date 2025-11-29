@@ -17,7 +17,7 @@ public class Tag {
     @Column(nullable = false, length = 60, unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "tags")
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private List<Space> spaces;
 
     @Override
@@ -27,6 +27,5 @@ public class Tag {
                 ", name='" + name + '\'' +
                 '}';
     }
-
 
 }

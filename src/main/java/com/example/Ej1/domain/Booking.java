@@ -47,13 +47,12 @@ public class Booking {
     @Column(precision = 10, scale = 2)
     private BigDecimal totalPrice;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "space_id", nullable = false)
     private Space space;
 
 }
-

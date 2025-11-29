@@ -4,6 +4,7 @@ import com.example.Ej2.domain.Arcade;
 import com.example.Ej2.domain.Cabinet;
 import com.example.Ej2.domain.Game;
 import com.example.Ej2.domain.Player;
+import com.example.Ej2.dto.ArcadeEstimatedIncome;
 import com.example.Ej2.dto.TopGameDto;
 import com.example.Ej2.service.ArcadeService;
 import com.example.Ej2.service.CabinetService;
@@ -21,6 +22,7 @@ public class MainConsultas {
         PlayerService playerService = new PlayerService();
         LocalDateTime sinceDate = LocalDateTime.of(2025, 11, 1, 1, 1);
 
+
         System.out.println("[ Consulta 1: ]");
         List<Arcade> arcades = arcadeService.getArcadeByName();
         arcades.forEach(System.out::println);
@@ -28,6 +30,10 @@ public class MainConsultas {
         System.out.println("[ Consulta 2: ]");
         List<TopGameDto> games = gameService.getTopGamesByMatches();
         games.forEach(System.out::println);
+
+        System.out.println("[ Consulta 3: ]");
+        List<ArcadeEstimatedIncome> arcadeEstimatedIncomes = arcadeService.estimatedIncomesByArcade();
+        arcadeEstimatedIncomes.forEach(System.out::println);
 
         System.out.println("[ Consulta 4: ]");
         List<Cabinet> cabinets = cabinetService.getCabinetsActiveByGenre();
@@ -37,5 +43,14 @@ public class MainConsultas {
         List<Player> players = playerService.findPlayersWithInactiveCardAndRecentMatches(sinceDate);
         System.out.println("Jugadores encontrados: " + players.size());
         players.forEach(System.out::println);
+
+//        System.out.println("[ Consulta 6: ]");
+//        List<Player> playersAchievements = playerService.getPlayerWithNAchievements();
+//        System.out.println("Jugadores encontrados: " + playersAchievements.size());
+//        players.forEach(System.out::println);
+
+        System.out.println("[ Consulta 8: ]");
+        List<Cabinet> cabinets1 = cabinetService.getCabinetsWithoutMatchesSince(sinceDate);
+        cabinets1.forEach(System.out::println);
     }
 }

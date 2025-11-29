@@ -9,14 +9,13 @@ import com.example.Ej2.dao.hibernateimpl.ArcadeDaoHibernate;
 import com.example.Ej2.dao.hibernateimpl.CabinetDaoHibernate;
 import com.example.Ej2.dao.hibernateimpl.GameDaoHibernate;
 import com.example.Ej2.dao.hibernateimpl.TagDaoHibernate;
-import com.example.Ej2.domain.Arcade;
-import com.example.Ej2.domain.Cabinet;
-import com.example.Ej2.domain.Game;
-import com.example.Ej2.domain.Tag;
+import com.example.Ej2.domain.*;
+import jakarta.persistence.criteria.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CabinetService {
@@ -52,6 +51,36 @@ public class CabinetService {
         }
     }
 
+    /*
+        8. Cabinets sin partidas desde la ultima X fecha. Se pasara una fecha por parametro.
+     */
+
+    public List<Cabinet> getCabinetsWithoutMatchesSince(LocalDateTime date) {
+        Transaction tx = null;
+        try{
+            Session s = sf.getCurrentSession();
+            tx = s.beginTransaction();
+
+            CriteriaBuilder cb = s.getCriteriaBuilder();
+            CriteriaQuery<Cabinet> cq = cb.createQuery(Cabinet.class);
+            Root<Cabinet> cabinetRoot = cq.from(Cabinet.class);
+            Join<Cabinet, Match> matches = cabinetRoot.join("matches", JoinType.LEFT);
+
+            cq.select(cabinetRoot).distinct(true);
+            cq.where(
+                    cb.or(
+                            cb.isNull(matches.get("id")),
+                            cb.lessThan(matches.get("startedAt"), date)
+                    )
+            );
+
+            return s.createQuery(cq).getResultList();
+        } catch (RuntimeException e) {
+            if (tx != null && tx.isActive()) tx.rollback();
+            throw e;
+        }
+    }
+
     public void asignarCabinet(Long cabinetId, Long arcadeId, Long gameId){
         Transaction tx = null;
         try{
@@ -66,7 +95,7 @@ public class CabinetService {
                 throw new IllegalArgumentException("Cabinet no encontrado con ID " + cabinetId);
             }
             if (arcade == null) {
-                throw new IllegalArgumentException("Arcade no encontrado con ID " + arcadeId);
+                throw new IllegalArgumentException("ArcadeEstimatedIncome no encontrado con ID " + arcadeId);
             }
             if (game == null) {
                 throw new IllegalArgumentException("Juego no encontrado con ID " + gameId);

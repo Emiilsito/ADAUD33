@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "players")
@@ -23,6 +24,11 @@ public class Player {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @OneToOne(mappedBy = "player")
+    @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @ToString.Exclude
     private RfidCard rfidCard;
+
+    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Match> matches;
 }

@@ -38,12 +38,11 @@ public class Space {
         MEETING_ROOM, OFFICE, STUDIO_AREA
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "venue_id", nullable = false)
     private Venue venue;
 
-
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "space_tag",
             joinColumns = @JoinColumn(name = "space_id"),
@@ -65,7 +64,4 @@ public class Space {
                 '}';
     }
 
-
-
 }
-

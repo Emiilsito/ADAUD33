@@ -16,6 +16,6 @@ public class Tag {
     @Column(nullable = false, unique = true, length = 30)
     private String name;
 
-    @ManyToMany(mappedBy = "tags")
+    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private List<Cabinet> cabinets;
 }

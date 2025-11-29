@@ -27,8 +27,8 @@ public class ArcadeVerseMain {
 
             System.out.println("=== INICIO DE PRUEBAS ARCADEVERSE ===");
 
-            // Alta de Arcade y Game
-            Arcade arcade = getOrCreateArcade(session, "Arcade Central", "Madrid");
+            // Alta de ArcadeEstimatedIncome y Game
+            Arcade arcade = getOrCreateArcade(session, "ArcadeEstimatedIncome Central", "Madrid");
             Game game = getOrCreateGame(session, "SF2", "Street Fighter II", 1991);
 
             // Alta de Cabinet asociado
@@ -117,7 +117,7 @@ public class ArcadeVerseMain {
     // ============================================================
 
     private static Arcade getOrCreateArcade(Session s, String name, String address) {
-        Arcade existing = (Arcade) s.createQuery("FROM Arcade a WHERE a.name = :n")
+        Arcade existing = (Arcade) s.createQuery("FROM ArcadeEstimatedIncome a WHERE a.name = :n")
                 .setParameter("n", name)
                 .uniqueResult();
         if (existing != null) return existing;

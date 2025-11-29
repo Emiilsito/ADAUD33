@@ -25,7 +25,7 @@ public class Game {
     @Column(name = "genre", length = 50)
     private String genre;
 
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY)
     private List<Cabinet> cabinets;
 
     @Override
@@ -38,5 +38,4 @@ public class Game {
                 ", genre='" + genre + '\'' +
                 '}';
     }
-
 }

@@ -27,15 +27,15 @@ public class Cabinet {
     @Column(nullable = false, length = 15)
     private Status status;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "arcade_id", nullable = false)
     private Arcade arcade;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "game_id", nullable = false)
     private Game game;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "cabinet_tags",
             joinColumns = @JoinColumn(name = "cabinet_id"),
@@ -43,7 +43,7 @@ public class Cabinet {
     )
     private List<Tag> tags;
 
-    @OneToMany(mappedBy = "cabinet")
+    @OneToMany(mappedBy = "cabinet", fetch = FetchType.LAZY)
     private List<Match> matches;
 
     @Override
@@ -57,6 +57,4 @@ public class Cabinet {
                 ", game=" + (game != null ? game.getName() : "null") +
                 '}';
     }
-
-
 }

@@ -32,6 +32,24 @@ public class PlayerService {
         rfidCardDao = new RfidCardDaoHibernate();
     }
 
+    /*
+        6. Jugadores con al menos N logros.
+     */
+
+    public List<Player> getPlayerWithNAchievements(){
+        Transaction tx = null;
+        try{
+            Session s = sf.getCurrentSession();
+            tx = s.beginTransaction();
+            List<Player> players = playerDao.getPlayersWithAtLeastNAchievements(s, 3);
+            tx.commit();
+            return players;
+        } catch (RuntimeException e) {
+            if (tx != null && tx.isActive()) tx.rollback();
+            throw e;
+        }
+    }
+
     public Long create(Player player) {
         Transaction tx = null;
         try {

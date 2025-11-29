@@ -1,6 +1,9 @@
 package com.example.Ej2.domain;
+
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,6 +26,6 @@ public class RfidCard {
 
     @OneToOne
     @JoinColumn(name = "player_id", nullable = false, unique = true)
+    @ToString.Exclude
     private Player player;
 }
-

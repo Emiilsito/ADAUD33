@@ -1,6 +1,5 @@
 package com.example.Ej2.domain;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -34,11 +33,11 @@ public class Match {
     @Column(name = "credits_used", nullable = false)
     private int creditsUsed;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "player_id", nullable = false)
     private Player player;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "cabinet_id", nullable = false)
     private Cabinet cabinet;
 }
